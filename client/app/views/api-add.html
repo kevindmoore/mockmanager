@@ -1,0 +1,24 @@
+<form role="form">
+  <div class="form-group">
+    <label for="endpoint" class="control-label">API</label>
+    <input type="text" ng-model="api.endpoint" class="form-control" id="endpoint" placeholder="Enter the API Endpoint"/>
+  </div>
+  <br/>
+  <div class="form-group">
+    <label for="headers" class="control-label">Header</label>
+    <input type="text" ng-model="api.headers" class="form-control" id="headers" placeholder="Option Header"/>
+  </div>
+  <br/>
+  <div class="form-group">
+    <label for="type" class="control-label">Type</label>
+    <select name="type">
+      <option value="GET" selected="true">GET</option>
+      <option value="POST">POST</option>
+      <option value="DELETE">DELETE</option>
+      <option value="PUT">PUT</option>
+    </select>
+  </div>
+  <br/>
+  <input type="submit" class="btn btn-primary" ng-click="saveAPI()" value="Save"/>
+  <br/>
+</form>

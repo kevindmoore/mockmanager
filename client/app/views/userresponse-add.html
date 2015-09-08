@@ -1,0 +1,21 @@
+<form role="form">
+    <div class="form-group">
+        <label for="username" class="control-label">Username&nbsp;</label>
+        <select name="username" ng-model="selectedUserName" ng-options="item as item.name for item in usernames">
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="api" class="control-label">API&nbsp;</label>
+        <select name="api" ng-model="selectedId" ng-options="item as item.endpoint for item in ids">
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="api" class="control-label">Response&nbsp;</label>
+        <select name="api" ng-model="selectedDataItem" ng-options="item as item.response for item in apidatas">
+        </select>
+    </div>
+    <br/>
+    <input type="submit" class="btn btn-primary" ng-click="saveUserResponse()" value="Save"/>
+    <br/>
+    <br/>
+</form>

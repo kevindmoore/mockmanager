@@ -1,0 +1,20 @@
+<a class="btn btn-primary" href="/#/create/apidata"><span class="glyphicon glyphicon-plus"></span> Create API Data</a>
+<br/>
+<table class="table table-striped">
+  <thead>
+    <th>Respose Code</th>
+    <th>Respose</th>
+  </thead>
+  <tbody>
+    <tr ng-repeat="apidata in apidatas">
+      <td>{{ apidata.code }}</td>
+      <td><a ng-href="/#/apidata/{{ apidata._id }}">{{ apidata.response }}</a></td>
+      <td>
+        <div class="button-group">
+          <a ng-href="/#/apidata/{{ apidata._id }}/edit" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></a>
+          <a ng-href="/#/apidata/{{ apidata._id }}/delete" class="btn btn-danger"><span class="glyphicon glyphicon-remove-circle"></span></a>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

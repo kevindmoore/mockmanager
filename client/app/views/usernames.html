@@ -1,0 +1,24 @@
+<a class="btn btn-primary" href="/#/create/usernames"><span class="glyphicon glyphicon-plus"></span> Create User Name</a>
+<br/>
+<br/>
+<div class="form-group">
+  <label for="currentUser" class="control-label">Current User&nbsp;</label>
+  <select name="currentUser" ng-model="selectedUser.name" ng-change="updateCurrentUser()" ng-options="item as item.name for item in usernames">
+  </select>
+</div>
+<table class="table table-striped">
+  <thead>
+    <th>Name</th>
+  </thead>
+  <tbody>
+    <tr ng-repeat="username in usernames">
+      <td><a ng-href="/#/usernames/{{ username._id }}">{{ username.name }}</a></td>
+      <td>
+        <div class="button-group">
+          <a ng-href="/#/usernames/{{ username._id }}/edit" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></a>
+          <a ng-href="/#/usernames/{{ username._id }}/delete" class="btn btn-danger"><span class="glyphicon glyphicon-remove-circle"></span></a>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

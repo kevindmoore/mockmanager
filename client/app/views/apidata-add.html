@@ -1,0 +1,24 @@
+
+<h2 class="center-block" ng-if="editApiData">Edit API Response</h2>
+<h2 class="center-block" ng-if="addApiData">Create New API Response</h2>
+<br/>
+<form role="form">
+  <div class="form-group">
+    <label for="api" class="control-label">API  </label>
+    <select name="api" ng-model="selectedItem" ng-options="item as item.endpoint for item in ids">
+    </select>
+  </div>
+  <br/>
+  <div class="form-group">
+    <label for="code" class="control-label">Response Code</label>
+    <input type="text" ng-model="apidata.code" class="form-control" id="code" placeholder="Enter reponse code"/>
+  </div>
+  <br/>
+  <div class="form-group">
+    <label for="response" class="control-label">Response</label>
+    <input type="text" ng-model="apidata.response" class="form-control" id="response" placeholder="Response"/>
+  </div>
+  <br/>
+  <input type="submit" class="btn btn-primary" ng-click="saveAPIData()" value="Save"/>
+  <br/>
+</form>
