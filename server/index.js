@@ -35,5 +35,5 @@ mongoose.connection.once('open', function () {
     app.use('*', require('./controllers/DatabaseController'));
 
     console.log('Listening on port 3000...');
-    app.listen(3000);
+    app.listen(process.env.PORT || 3000);
 });
