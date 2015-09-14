@@ -2,6 +2,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
+var cookieParser = require('cookie-parser');
 var _ = require('lodash');
 
 // Create the application.
@@ -10,6 +11,7 @@ var app = express();
 // Add Middleware necessary for REST API's
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(methodOverride('X-HTTP-Method-Override'));
 
 // CORS Support

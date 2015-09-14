@@ -21,7 +21,7 @@ angular
         $routeProvider
             .when('/', {
                 templateUrl: 'views/main.html',
-                controller: ''
+                controller: 'main'
             })
             .when('/usernames', {
                 templateUrl: 'views/usernames.html',

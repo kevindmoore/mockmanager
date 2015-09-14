@@ -14,21 +14,24 @@ angular.module('clientApp')
     ) {
         Usernames.getList().then(function(usernames) {
             $scope.usernames = usernames;
-            CurrentUser.getList().then(function(username) {
-                if (username) {
-                    $scope.currentUser = username;
-                }
-                if (username.length > 0) {
-                    $scope.selectedUser = username[0];
+            CurrentUser.getList().then(function(currentUser) {
+                if (currentUser && currentUser.length > 0) {
+                    $scope.currentUser = currentUser[0];
+                    for (var i=0; i < $scope.usernames.length; i++) {
+                      if ($scope.usernames[i]._id === currentUser[0].userId) {
+                        $scope.selectedUser = $scope.usernames[i];
+                        break;
+                      }
+                    }
                 }
             });
         });
         $scope.updateCurrentUser = function () {
-            if ($scope.currentUser && $scope.currentUser.length > 0) {
-                $scope.currentUser.remove($scope.currentUser[0]._id);
+            if ($scope.currentUser) {
+                $scope.currentUser.remove($scope.currentUser._id);
             }
-            var currentUser = { 'name' : $scope.selectedUser.name.name};
-            CurrentUser.post(currentUser);
+            var newCurrentUser = { 'name' : $scope.selectedUser.name, 'userId': $scope.selectedUser._id};
+            CurrentUser.post(newCurrentUser);
         };
 
     });

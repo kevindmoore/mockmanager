@@ -3,7 +3,7 @@
 <br/>
 <div class="form-group">
   <label for="currentUser" class="control-label">Current User&nbsp;</label>
-  <select name="currentUser" ng-model="selectedUser.name" ng-change="updateCurrentUser()" ng-options="item as item.name for item in usernames">
+  <select name="currentUser" ng-model="selectedUser" ng-change="updateCurrentUser()" ng-options="user.name for user in usernames">
   </select>
 </div>
 <table class="table table-striped">
