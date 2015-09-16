@@ -45,4 +45,5 @@ yo angular:route ```<html file name/controller name> --uri=<path>```
 8. npm install --save body-parser
 9. npm install --save lodash
 10. npm install --save node-restful
+11. npm install --save q
 
