@@ -79,7 +79,8 @@ function addNewAPI(req, url) {
     var userresponse = mongoose.model('userresponse', require('../models/userresponse'));
     var currentuser = mongoose.model('currentuser', require('../models/currentuser'));
     var newAPI = new apis({endpoint: url});
-    var Q = require("q");
+    //var Q = require("q");
+    var async = require("async");
     if (req.headers) {
         newAPI.headers = JSON.stringify(req.headers);
     }
@@ -89,107 +90,80 @@ function addNewAPI(req, url) {
     var type = bodyData.type;
     var username = bodyData.username;
     var newAPIData;
+    var newName;
+    var nameId;
     if (type) {
         newAPI.type = type;
     }
-    var promise1 = apis.findOne({'endpoint' : url});
-    //Q.all([promise1]).done(function(values) {
-    promise1.then(function(api) {
-        if (!api) {
-            console.log("Saving API");
-            return newAPI.save();
-        } else {
-            console.log("Found API id " + api._id);
-            newAPI._id = api._id;
-        }
-    }).then(function() {
-        if (code && response) {
-            newAPIData = new apidata({apiId: newAPI._id, code: code, response: response});
-            console.log("Looking for API id " + newAPI._id);
-            return apidata.findOne({apiId: newAPI._id});
-        }
-
-    }).then(function(apidata) {
-        if (!apidata) {
-            console.log("Didn't find APIData. Saving APIData");
-            newAPIData.save(function (err) {
-                if (err) console.log('Error saving NewAPIData  ' + err);
-            });
-        } else {
-            console.log("Found APIData");
-            newAPIData = apidata;
-        }
-    });
-/*
-    Q.fcall(promise1).then(function(api) {
-        console.log("Found api " + api);
-
-    }).catch(function(error) {
-        console.log("Error " + error);
-
-    }).done();
-*/
-
-    /*
-    apis.findOne({'endpoint' : url}, function(err, api) {
-        if (!api || err) {
-            if (err) console.log("Error getting apis " + err);
-            console.log("Saving API");
-            newAPI.save(function (err) {
-                if (err) console.log('Error saving newAPI  ' + err);
-            });
-        } else {
-            console.log("Found API id " + api._id);
-            newAPI._id = api._id;
-        }
-    });
-    var newAPIData;
-    if (code && response) {
-        newAPIData = new apidata({apiId: newAPI._id, code: code, response: response});
-        console.log("Looking for API id " + newAPI._id);
-        apidata.findOne({apiId: newAPI._id}, function (err, apidata) {
-            if (!apidata || err) {
-                if (err) console.log("Error getting APIData " + err);
+    // Remember callback(error, result)
+    async.waterfall([
+        // First find out if the endpoint already exists
+        function(callback) {
+            apis.findOne({'endpoint' : url}, callback);
+        },
+        // If it doesn't save it
+        function(api, callback) {
+            if (!api) {
+                console.log("Saving API");
+                newAPI.save(callback);
+            } else {
+                console.log("Found API id " + api._id);
+                newAPI._id = api._id;
+                callback(null, newAPI);
+            }
+        // Now look for the API Data.
+        }, function(api, callback) {
+            if (code && response) {
+                console.log("Looking for API id " + newAPI._id);
+                apidata.findOne({apiId: newAPI._id}, callback);
+            } // else can't go any further
+        // Now either save a new one or go on
+        }, function(apiData, callback) {
+            if (!apiData ) {
                 console.log("Didn't find APIData. Saving APIData");
-                newAPIData.save(function (err) {
-                    if (err) console.log('Error saving NewAPIData  ' + err);
-                });
+                newAPIData = new apidata({apiId: newAPI._id, code: code, response: response});
+                newAPIData.save(callback);
             } else {
                 console.log("Found APIData");
-                newAPIData = apidata;
+                newAPIData = {_id: apiData._id, apiId: newAPI._id, code: apiData.code, response: apiData.response};
+                callback(null, null);
             }
-        });
-    }
-    if (username) {
-        usernames.findOne({'name': username}, function (err, foundName) {
-            var nameId;
-            if (!foundName || err) {
-                var newName = new usernames({name: username, apis: []});
-                newName.save(function (err) {
-                    if (err) console.log('Error saving newName  ' + err);
-                });
-                nameId = newName._id;
+        // Look for the username
+        }, function(apiData, callback) {
+            if (username) {
+                usernames.findOne({name: username}, callback);
             } else {
-                nameId = foundName._id;
+                callback(null,null);
             }
-            var newUserresponse = new userresponse({userId: nameId, apiId: newAPI._id, apiDataId: newAPIData._id});
-            userresponse.findOne({
-                userId: nameId,
-                apiId: newAPI._id,
-                apiDataId: newAPIData._id
-            }, function (err, apiResponse) {
-                if (err || !apiResponse) {
-                    if (err) console.log("Error getting userresponse " + err);
-                    console.log("Didn't find apiResponse. Saving");
-                    newUserresponse.save(function (err) {
-                        if (err) console.log('Error saving newUserresponse  ' + err);
-                    });
-                } else {
-                    console.log("User response already exists " + newUserresponse);
+        // If not found save
+        }, function(foundName, callback) {
+            if (!foundName && username) {
+                newName = new usernames({name: username, apis: []});
+                newName.save(callback);
+            } else {
+                callback(null, foundName);
+            }
+        // Find the user response
+        }, function(savedName, callback) {
+            if (savedName) {
+                nameId = savedName._id.toString();
+            } else {
+                nameId = newName._id.toString();
+            }
+            console.log( 'userId ' + nameId +  ' apiId: ' + newAPI._id +  ' apiDataId ' + newAPIData._id);
+            userresponse.findOne({'userId': nameId, 'apiId': newAPI._id, 'apiDataId': newAPIData._id}, callback);
+        // If not found, save it, otherwise go on
+        }, function(apiResponse, callback) {
+            if (!apiResponse) {
+                console.log("Didn't find apiResponse. Saving");
+                var newUserresponse = new userresponse({userId: nameId, apiId: newAPI._id, apiDataId: newAPIData._id});
+                newUserresponse.save(callback);
+            } else {
+                console.log("User response already exists " + apiResponse);
+            }
+        }
+        ], function(error, result) {
+            if (error) console.log(error);
+    });
 
-                }
-            });
-        });
-    }
-    */
 }
