@@ -9,6 +9,7 @@ module.exports = function(req, res, next) {
     if (url.indexOf('/') != -1) {
         url = url.substr(1);
     }
+    console.log("Looking at URL " + url);
     var bodyData = parseBody(req);
     if (bodyData.username || bodyData.response) {
         addNewAPI(req, url);
@@ -94,6 +95,8 @@ function addNewAPI(req, url) {
     var nameId;
     if (type) {
         newAPI.type = type;
+    } else {
+        newAPI.type = "GET";
     }
     // Remember callback(error, result)
     async.waterfall([
